@@ -1,0 +1,34 @@
+---
+
+#全サーバ共通設定
+- hosts: all
+  become: yes
+  roles:
+    - common/user
+    - common/java
+
+#gy01グループ共通設定
+#main.ymlのみ自動で検出して実行される
+#なのでmain.ymlでdeployJenkins.ymlやdeployGitbucket.ymlをincludeしている
+- hosts: gy01
+  become: yes
+  roles:
+    - gy01/jetty
+
+
+#反対に不定期実行のタスクはincludeしないでおいて必要な時にsite.ymlでinclude
+#site2.yml参照
+#- hosts: gy01
+#  become: yes
+#  tasks:
+#    - include: roles/cmg/jetty/tasks/不定期タスク1.yml
+#    - include: roles/cmg/jetty/tasks/不定期タスク2.yml
+#みたいな感じ
+
+
+
+
+
+
+
+

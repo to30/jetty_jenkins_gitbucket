@@ -1,0 +1,10 @@
+---
+
+- name: Download Gitgucket war
+  get_url:
+    url="https://github.com/gitbucket/gitbucket/releases/download/4.3/gitbucket.war"
+    dest={{ jetty_dst_dir }}/jetty/webapps/
+
+- name: Change owner Jenkins
+  command: "chown -R {{ jetty_user_login }}:{{ jetty_group_name }} {{ jetty_dst_dir }}/jetty/webapps/gitbucket.war"
+

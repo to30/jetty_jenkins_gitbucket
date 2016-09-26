@@ -1,0 +1,14 @@
+---
+
+#毎回実行されると困るようなもの（アカウント・パスワードの様にべきとう性が邪魔になるもの）は
+#roleのmain.ymlに含めないで下記の様に個別で呼び出す
+
+- hosts: all
+  become: yes
+  tasks:
+    - include: roles/common/user/tasks/addUser.yml
+    - include: roles/common/java/tasks/installJava.yml
+    - include: roles/cmg/jetty/tasks/installJetty.yml
+    - include: roles/cmg/jetty/tasks/deployJenkins.yml
+    - include: roles/cmg/jetty/tasks/deployGitbucket.yml
+    - include: roles/cmg/jetty/tasks/startJetty.yml

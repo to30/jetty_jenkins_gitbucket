@@ -1,0 +1,28 @@
+---
+  - name: jetty グループ作成
+    group:
+      name={{ jetty_group_name }}
+      state=present
+      system=yes
+    when: jetty_group_create
+
+  - name: jetty ユーザ作成
+    user:
+      name={{ jetty_user_login }}
+      state=present
+      comment='Jetty Web Server'
+      createhome=yes
+      group={{ jetty_group_name }}
+      home={{ jetty_user_homedir }}
+      shell=/bin/bash
+      system=yes
+    when: jetty_user_create
+
+
+  - name: AnsibleのSSH公開鍵を登録
+    authorized_key:
+      user: jetty
+      key: "{{ lookup('file', '/tmp/id_rsa.pub') }}"
+
+  - name: jettyユーザに sudo 権限付与
+    template: src=roles/common/user/templates/sudoers.j2 dest=/etc/sudoers.d/jetty

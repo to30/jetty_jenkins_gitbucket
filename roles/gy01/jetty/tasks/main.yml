@@ -1,0 +1,63 @@
+---
+
+- name: Download Jetty tarball
+  get_url:
+    url="http://repo1.maven.org/maven2/org/eclipse/jetty/jetty-distribution/{{ jetty_version }}/jetty-distribution-{{ jetty_version }}.tar.gz"
+    dest={{ jetty_src_dir }}
+
+- name: Unpack Jetty tarball
+  command: "tar zxvf {{ jetty_src_dir }}/jetty-distribution-{{ jetty_version }}.tar.gz -C /opt/"
+
+- name: Change owner
+  command: "chown -R {{ jetty_user_login }}:{{ jetty_group_name }} {{ jetty_dst_dir }}/jetty-distribution-{{ jetty_version}}"
+
+- name: Create symbolic link to distribution
+  file:
+    src="{{ jetty_dst_dir }}/jetty-distribution-{{ jetty_version}}"
+    dest={{ jetty_dst_dir }}/jetty
+    owner={{ jetty_user_login }}
+    group={{ jetty_group_name }}
+    state=link
+
+- name: start.ini file Deploy
+  template:
+    src=roles/cmg/jetty/templates/start.ini.j2
+    dest=/opt/jetty/start.ini
+
+- name: Init file Deploy
+  file:
+    src="{{ jetty_dst_dir }}/jetty/bin/jetty.sh"
+    dest="/etc/init.d/jetty"
+    owner=root
+    group=root
+    state=link
+
+- name: Create Jetty Log directory
+  file: 
+    path={{ jetty_user_homedir }}/logs 
+    owner={{ jetty_user_login }}
+    group={{ jetty_group_name }}
+    mode=0755
+    state=directory
+
+- name: Jety default
+  template:
+    src=roles/cmg/jetty/templates/jetty.j2
+    dest=/etc/default/jetty
+
+
+- name: Chkconfig add
+  service:
+    name=jetty
+    enabled=yes
+
+- name: Delete Jetty tarball
+  file:
+    path={{ jetty_src_dir }}/jetty-distribution-{{ jetty_version }}.tar.gz
+    state=absent
+
+- include: deployJenkins.yml
+
+- include: deployGitbucket.yml
+
+- include: startJetty.yml
