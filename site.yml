@@ -4,8 +4,8 @@
 - hosts: all
   become: yes
   roles:
-    - common/user
-    - common/java
+    - role: common/user
+    - role: common/java
 
 #gy01グループ共通設定
 #main.ymlのみ自動で検出して実行される
@@ -13,7 +13,7 @@
 - hosts: gy01
   become: yes
   roles:
-    - gy01/jetty
+    - role: gy01/jetty
 
 
 #反対に不定期実行のタスクはincludeしないでおいて必要な時にsite.ymlでinclude
